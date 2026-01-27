@@ -87,6 +87,12 @@ exp03-debug: 03-lds-memory/lds_memory.cpp
 exp03-asm: 03-lds-memory/lds_memory.cpp
 	$(HIPCC) --offload-arch=$(ARCH) -O3 -S -o 03-lds-memory/lds_memory.s $<
 
+exp04-debug: 04-mfma-intro/mfma_intro.cpp
+	$(HIPCC) $(DEBUGFLAGS) -o 04-mfma-intro/mfma_intro_debug $<
+
+exp04-asm: 04-mfma-intro/mfma_intro.cpp
+	$(HIPCC) --offload-arch=$(ARCH) -O3 -S -o 04-mfma-intro/mfma_intro.s $<
+
 # Run all experiments in order
 run: all
 	@echo ""
