@@ -20,3 +20,6 @@ mfma_gemm
 .vscode/
 .cache/
 compile_commands.json
+
+# Others
+*.txt
