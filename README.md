@@ -21,7 +21,7 @@ A progressive, hands-on learning path for AMD GPU kernel programming, focusing o
 - [Essential Documentation](#essential-documentation)
 - [Roadmap](#roadmap)
 - [Contributing](#contributing)
-- [License](#license)
+- [Licence](#licence)
 
 ---
 
@@ -64,7 +64,7 @@ This section provides factual technical comparisons to help you understand the A
 
 ROCm is fully open-source from the compiler (LLVM-based) through runtime libraries. You can read, modify, and understand every layer of the stack. This transparency is invaluable for learning and debugging.
 
-```
+```bash
 # You can inspect generated assembly directly
 hipcc --offload-arch=gfx942 -S -o kernel.s kernel.cpp
 ```
@@ -105,14 +105,14 @@ These limitations are improving rapidly, but awareness helps set realistic expec
 
 ## Getting Free GPU Access
 
-You do not need to purchase hardware to learn AMD kernel programming. Several paths provide free or low-cost access to MI300X GPUs.
+You do not need to purchase hardware to learn AMD kernel programming.
 
 ### Option 1: AMD AI Developer Program (Recommended)
 
 The AMD AI Developer Program provides the most comprehensive free access package.
 
 **What You Get:**
-- **$100 in AMD Developer Cloud credits** (approximately 50 GPU-hours on 1× MI300X)
+- **$100 in DigitalOcean credits** for GPU instances
 - Access to private Discord channel with AMD engineers
 - Monthly hardware sweepstakes (Radeon GPUs, Ryzen AI PCs)
 - Early access to developer events and workshops
@@ -122,75 +122,21 @@ The AMD AI Developer Program provides the most comprehensive free access package
 1. Navigate to [amd.com/en/developer/ai-dev-program.html](https://www.amd.com/en/developer/ai-dev-program.html)
 2. Click "Join Now" and complete the registration form
 3. After registration, you receive an email with a link to the member site
-4. On the member site, find and click the "$100 credit link" to activate your Developer Cloud credits
-5. Create or log into your Developer Cloud account to receive the credits
+4. On the member site, find and click the "$100 credit link" to activate your DigitalOcean credits
+5. Create or log into your DigitalOcean account to receive the credits
 
 **Important Notes:**
 - Credits are activated only after you create/log into the cloud account via the member site link
 - For questions: `devcloudrequests@amd.com`
 
-### Option 2: AMD Developer Cloud (Direct Access)
-
-If you need quick access without joining the full programme, you can request credits directly.
-
-**What You Get:**
-- 25 complimentary GPU-hours on MI300X
-- 10-day expiry from credit approval
-- Preconfigured ROCm Docker images
-
-**How to Apply:**
-
-1. Visit [devcloud.amd.com](https://devcloud.amd.com)
-2. Create an account using GitHub login
-3. Complete the "Request Credit" form describing your intended use case
-4. Wait for approval (typically 1-3 business days)
-5. Credits appear on your console home page
-
-**Critical Information:**
-- A valid credit card is required at account creation (not charged unless credits exhausted)
-- **Powered-off VMs still consume credits** — destroy instances when not in use
-- Take snapshots before destroying to preserve your work
-- Credits apply only to GPU compute, not storage or backups
-
-### Option 3: ROCm Star Certification (+50 Hours)
-
-Earn additional free hours by demonstrating AMD development competency.
-
-**What You Get:**
-- Up to 50 additional AMD Developer Cloud hours
-- Official AMD certification
-
-**How to Earn:**
-
-1. Access the ROCm Star Application Developer Certificate through the Developer Cloud portal
-2. Complete the 40-question assessment covering:
-   - HIP programming fundamentals
-   - OpenMP GPU offloading
-   - ROCm library usage (rocBLAS, hipBLAS, etc.)
-   - Application porting strategies
-3. Pass the test to receive additional credits
-
-### Option 4: Commercial Cloud Providers
-
-For extended development or production workloads, several providers offer MI300X instances:
-
-| Provider | GPU Options | Notes |
-|----------|-------------|-------|
-| DigitalOcean | MI300X, MI325X | Straightforward pricing, good documentation |
-| Vultr | MI300X, MI325X, MI355X | Competitive rates |
-| TensorWave | MI300X, MI325X, MI355X | AI-focused provider |
-| Oracle Cloud | MI300X, MI355X | Enterprise-grade |
-| RunPod | MI300X | On-demand and spot instances |
-
 ### Maximising Your Free Credits
 
 Here are strategies to make your free GPU hours last:
 
-1. **Develop locally first** — Write and debug code on CPU before testing on GPU
-2. **Use snapshots** — Save VM state before destroying to preserve environment setup
-3. **Destroy, don't power off** — Powered-off instances still consume credits
-4. **Batch your GPU work** — Plan sessions to maximise productive time
-5. **Start with 1× GPU** — The 8× MI300X configuration consumes credits 8× faster
+1. **Use snapshots** — Save VM state before destroying to preserve environment setup
+2. **Destroy, don't power off** — Powered-off instances still consume credits
+3. **Batch your GPU work** — Plan sessions to maximise productive time
+4. **Start with 1× GPU** — The 8× MI300X configuration consumes credits 8× faster
 
 ---
 
@@ -250,7 +196,7 @@ On your local machine (for connecting to remote GPU):
 - Text editor or IDE with remote development support (VSCode recommended)
 - Git
 
-On the GPU instance (pre-installed in AMD Developer Cloud images):
+On the GPU instance (pre-installed in DigitalOcean AMD GPU images):
 - ROCm 6.0 or later
 - HIP compiler (hipcc)
 
@@ -296,11 +242,11 @@ The course consists of progressive experiments. Complete them in order—each bu
 
 | Experiment | Topic | Duration | Key Concepts |
 |------------|-------|----------|--------------|
-| 01 | Hello HIP | 1-2 hours | Kernel launch, thread indexing, memory management |
-| 02 | Wavefront Basics | 2-3 hours | 64-thread SIMD, lane operations, divergence |
-| 03 | LDS Memory | 2-3 hours | Shared memory, bank conflicts, synchronisation |
-| 04 | MFMA Introduction | 3-4 hours | *Coming soon* |
-| 05 | MFMA GEMM | 4-6 hours | *Coming soon* |
+| 01 | Hello HIP | 1–2 hours | Kernel launch, thread indexing, memory management |
+| 02 | Wavefront Basics | 2–3 hours | 64-thread SIMD, lane operations, divergence |
+| 03 | LDS Memory | 2–3 hours | Shared memory, bank conflicts, synchronisation |
+| 04 | MFMA Introduction | 2–3 hours | Matrix cores, AGPR/VGPR, correct vector types |
+| 05 | MFMA GEMM | 2–3 hours | Tiled GEMM, cooperative loading, optimisation |
 
 ### Experiment Format
 
@@ -309,7 +255,7 @@ Each experiment follows a consistent structure:
 ```
 XX-experiment-name/
 ├── experiment_name.cpp    # Heavily commented source code
-└── README.md              # Theory explanation (if present)
+└── README.md              # Theory explanation and exercises
 ```
 
 The source files contain extensive educational comments explaining:
@@ -369,7 +315,7 @@ Open `hello_hip.cpp` in your editor and read through the comments carefully. The
 - Why we use `__global__` for kernel functions
 - How thread indexing works
 - Why bounds checking is essential
-- How memory transfers between host and device
+- How memory transfers between host and device work
 
 **We strongly encourage typing the code yourself** rather than running the pre-written version. The act of typing, making mistakes, and debugging builds deeper understanding.
 
@@ -382,27 +328,42 @@ For convenience, a Makefile is provided:
 make help          # Show available targets
 make exp01         # Build experiment 01
 make exp02         # Build experiment 02
+make exp04         # Build experiment 04 (MFMA intro)
+make exp05         # Build experiment 05 (MFMA GEMM)
 make all           # Build all experiments
 make run           # Build and run all experiments
 make clean         # Remove built binaries
 ```
 
-### Examining Generated Assembly
+### Debug Builds
 
-Understanding what the compiler generates is crucial for optimisation:
+Debug builds compile with `-O0 -g -save-temps` flags, producing unoptimised binaries with debug symbols and all intermediate files:
 
 ```bash
-# Generate assembly file
-hipcc --offload-arch=gfx942 -O3 -S -o kernel.s hello_hip.cpp
-
-# Or save all intermediate files
-hipcc --offload-arch=gfx942 -O3 --save-temps -o hello_hip hello_hip.cpp
+make exp01-debug   # Creates 01-hello-hip/hello_hip_debug
+make exp04-debug   # Creates 04-mfma-intro/mfma_intro_debug
+make exp05-debug   # Creates 05-mfma-gemm/mfma_gemm_debug
 ```
 
-Look for MFMA instructions in experiments 04 and 05:
+The `-save-temps` flag preserves intermediate files (`.ll`, `.bc`, `.o`) which are useful for understanding the compilation pipeline.
+
+### Assembly Generation
+
+Generate human-readable assembly to inspect what the compiler produces:
+
+```bash
+make exp01-asm     # Creates 01-hello-hip/hello_hip.s
+make exp04-asm     # Creates 04-mfma-intro/mfma_intro.s
+make exp05-asm     # Creates 05-mfma-gemm/mfma_gemm.s
+```
+
+In the generated `.s` files, look for MFMA instructions:
+
 ```asm
-v_mfma_f32_32x32x8_f16 a[0:15], v[0:1], v[2:3], a[0:15]
+v_mfma_f32_16x16x16_f16 a[0:3], v[0:1], v[2:3], a[0:3]
 ```
+
+This is essential for verifying correct code generation and understanding register allocation.
 
 ### Profiling Your Kernels
 
@@ -410,18 +371,16 @@ Use rocprof to measure kernel performance:
 
 ```bash
 # Basic timing statistics
-rocprof --stats ./hello_hip
+rocprof --stats ./mfma_gemm
 
 # Detailed hardware counters
-echo "pmc: SQ_WAVES, SQ_INSTS_VALU, SQ_INSTS_LDS" > counters.txt
-rocprof -i counters.txt ./hello_hip
+echo "pmc: SQ_WAVES, SQ_INSTS_VALU, SQ_INSTS_MFMA" > counters.txt
+rocprof -i counters.txt ./mfma_gemm
 ```
 
 ---
 
 ## Essential Documentation
-
-### Primary References
 
 **AMD Instinct MI300 ISA Manual**
 
@@ -437,24 +396,9 @@ Key sections for this course:
 - Section 7: Matrix Fused Multiply-Add (MFMA)
 - Section 9: Data Share Operations (LDS)
 
-**ROCm Documentation**
-
-- [HIP Programming Guide](https://rocm.docs.amd.com/projects/HIP/en/latest/) — API reference and tutorials
-- [ROCm Documentation Hub](https://rocm.docs.amd.com/) — Comprehensive ROCm information
-- [LLVM AMDGPU Backend](https://llvm.org/docs/AMDGPUUsage.html) — Compiler internals
-
-### Supplementary Reading
-
-For deeper understanding of GPU programming concepts:
-
-- **Composable Kernel Source** — [github.com/ROCm/composable_kernel](https://github.com/ROCm/composable_kernel) — Production-grade kernel implementations
-- **LLVM gfx942 Instructions** — [llvm.org/docs/AMDGPU/AMDGPUAsmGFX940.html](https://llvm.org/docs/AMDGPU/AMDGPUAsmGFX940.html) — Assembly reference
-
 ---
 
 ## Roadmap
-
-This section describes the current state and planned expansions.
 
 ### Currently Available
 
@@ -463,13 +407,13 @@ This section describes the current state and planned expansions.
 | ✅ | 01-hello-hip | HIP fundamentals, kernel launch, memory management |
 | ✅ | 02-wavefront-basics | Wavefront execution, lane operations, divergence |
 | ✅ | 03-lds-memory | Local Data Share, bank conflicts, synchronisation |
+| ✅ | 04-mfma-intro | MFMA instruction basics, AGPR usage, correct vector types |
+| ✅ | 05-mfma-gemm | Tiled GEMM implementation with MFMA |
 
 ### Planned Additions
 
-These experiments are under development and not yet available:
+These experiments are under development:
 
-- **04-mfma-intro** — MFMA instruction basics, AGPR usage
-- **05-mfma-gemm** — Tiled GEMM implementation with MFMA
 - **06-mfma-attention** — Flash Attention kernel using MFMA
 - **07-multi-gpu** — Peer-to-peer communication patterns
 - **08-profiling-deep-dive** — Advanced rocprof usage and optimisation
@@ -496,14 +440,16 @@ Contributions are welcome. Areas where help is particularly valuable:
 4. Ensure code compiles and runs correctly
 5. Submit a pull request with description of changes
 
-### Code Style
+---
 
-- Heavy educational comments explaining the "why"
-- British English spelling (optimisation, colour, behaviour)
-- Consistent formatting with existing code
+## Licence
+
+This project is licensed under the Apache 2.0 Licence. See `LICENSE` file for details.
 
 ---
 
-## License
+## Acknowledgements
 
-This project is licensed under the Apache License 2.0. See [LICENSE](LICENSE) for details.
+- AMD AI Developer Program for GPU access credits
+- ROCm team for comprehensive documentation
+- Composable Kernel project for demonstrating production patterns
