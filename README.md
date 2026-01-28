@@ -127,7 +127,7 @@ The AMD AI Developer Program provides the most comprehensive free access package
 
 **Important Notes:**
 - Credits are activated only after you create/log into the cloud account via the member site link
-- For questions: `devcloudrequests@amd.com`
+- For questions: `ai_dev_program@amd.com`
 
 ### Maximising Your Free Credits
 
