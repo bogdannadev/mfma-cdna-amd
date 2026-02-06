@@ -28,7 +28,7 @@
  */
 
 #include <hip/hip_runtime.h>
-#include <stdio.h>
+#include <cstdio>
 
 /**
  * Error checking macro - ESSENTIAL for debugging GPU code.
@@ -67,6 +67,7 @@ __global__ void vector_square_kernel(float* output, const float* input, int n) {
     // We often launch more threads than elements (to fill wavefronts).
     // Extra threads must NOT access the memory
     if (tid < n) {
+        // Each thread processes one element
         output[tid] = input[tid] * input[tid];
     }
 }
@@ -98,5 +99,68 @@ int main() {
     // Step 1: Print device info to verify we're on MI300X
     print_device_info();
 
+    // Step 2: Define problem size
+    const int N = 1024; // 16 wavefronts worth
+    const size_t bytes = N * sizeof(float);
+
+    printf("Problem size: %d elements (%zu bytes)\n", N, bytes);
+
+    // Step 3: Allocate HOST memory (CPU-side)
+    auto* h_input = (float*)malloc(bytes);
+    auto* h_output = (float*)malloc(bytes);
+
+    // Step 4: Initialise input data
+    for (int i = 0; i < N; i++)
+    {
+        h_input[i] = (float)i;
+    }
+
+    // Step 5: Allocate DEVICE memory (GPU VRAM)
+    float* d_input;
+    float* d_output;
+    HIP_CHECK(hipMalloc(&d_input, bytes));
+    HIP_CHECK(hipMalloc(&d_output, bytes));
+
+    // Step 6: Copy input HOST -> Device
+    HIP_CHECK(hipMemcpy(d_input, h_input, bytes, hipMemcpyHostToDevice));
+
+    // Step 7: Configure launch
+    int threadsPerBlock = 256; // 4 wavefronts
+    int blocksPerGrid = (N + threadsPerBlock - 1) / threadsPerBlock;
+
+    printf("Launch: %d blocks * %d threads\n", blocksPerGrid, threadsPerBlock);
+
+    // Step 8: Launch kernel
+    vector_square_kernel<<<blocksPerGrid, threadsPerBlock>>>(d_output, d_input, N);
+    HIP_CHECK(hipGetLastError());
+    HIP_CHECK(hipDeviceSynchronize());
+
+    // Step 9: Copy results DEVICE -> HOST
+    HIP_CHECK(hipMemcpy(h_output, d_output, bytes, hipMemcpyDeviceToHost));
+
+    // Step 10: Verify
+    int errors = 0;
+    for (int i = 0; i < N; i++)
+    {
+        float expected = (float)i * (float)i;
+        if (h_output[i] != expected)
+            errors++;
+    }
+    printf("Result: %s (%d errors)\n", errors == 0 ? "PASS" : "FAIL", errors);
+
+    // Print samples
+    printf("\nSamples: ");
+    for (int i = 0; i < 5; i++)
+        printf("%.0f^2 = %.0f ", h_input[i], h_output[i]);
+    printf("\n");
+
+    // Cleanup
+    HIP_CHECK(hipFree(d_input));
+    HIP_CHECK(hipFree(d_output));
+    free(h_input);
+    free(h_output);
+
+    printf("\n Experiment 01 complete!\n\n");
+    return 0;
 
 }

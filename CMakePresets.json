@@ -1,0 +1,211 @@
+{
+  "$comment": [
+    "==========================================================================",
+    " CMakePresets.json — Portabel byggkonfiguration / Portable build config   ",
+    "==========================================================================",
+    "                                                                          ",
+    " VAD ÄR DETTA? (WHAT IS THIS?)                                           ",
+    "   CMake Presets är ett portabelt JSON-format som ersätter IDE-specifika   ",
+    "   konfigurationer. Istället för att ställa in byggflaggor i CLions       ",
+    "   inställningar (som inte kan delas), definierar vi allt här.            ",
+    "   CMake Presets is a portable JSON format that replaces IDE-specific      ",
+    "   configurations. Instead of setting build flags in CLion's settings     ",
+    "   (which cannot be shared), we define everything here.                   ",
+    "                                                                          ",
+    " HUR CLION ANVÄNDER DETTA (HOW CLION USES THIS):                         ",
+    "   1. CLion detekterar denna fil automatiskt vid projektöppning           ",
+    "      CLion detects this file automatically when opening the project      ",
+    "   2. Presets visas i CMake-profildialogen (Settings > Build > CMake)     ",
+    "      Presets appear in the CMake profile dialog                          ",
+    "   3. Du väljer en preset istället för att manuellt ange flaggor          ",
+    "      You select a preset instead of manually entering flags              ",
+    "                                                                          ",
+    " STRUKTUR (STRUCTURE):                                                   ",
+    "   configurePresets  → CMake-konfigurering (cmake -B build ...)           ",
+    "   buildPresets      → Byggkommandon (cmake --build ...)                  ",
+    "                                                                          ",
+    " DENNA FIL COMMITTAS TILL GIT (THIS FILE IS COMMITTED TO GIT).           ",
+    " Personliga anpassningar → CMakeUserPresets.json (gitignored).            ",
+    "=========================================================================="
+  ],
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 21,
+    "patch": 0
+  },
+
+
+  "configurePresets": [
+    {
+      "$comment": [
+        "------------------------------------------------------------",
+        " BAS-PRESET (BASE PRESET)                                   ",
+        "                                                            ",
+        " Gemensam konfiguration som alla andra presets ärver.        ",
+        " Common configuration that all other presets inherit.        ",
+        "                                                            ",
+        " 'hidden: true' — denna preset visas inte i CLion direkt,   ",
+        " den fungerar bara som en förälder (parent).                ",
+        " 'hidden: true' — this preset is not shown in CLion         ",
+        " directly, it only serves as a parent.                      ",
+        "------------------------------------------------------------"
+      ],
+      "name": "base",
+      "hidden": true,
+      "description": "Gemensamma inställningar / Common settings for all builds",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_HIP_ARCHITECTURES": "gfx942",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      }
+    },
+
+    {
+      "$comment": [
+        "------------------------------------------------------------",
+        " RELEASE — Maximal prestanda (Maximum performance)           ",
+        "                                                            ",
+        " Använd för: benchmarking, profilering med rocprof,          ",
+        "   slutgiltig prestanda-verifiering.                         ",
+        " Use for: benchmarking, profiling with rocprof, final        ",
+        "   performance verification.                                ",
+        "                                                            ",
+        " I CLion: välj 'release' i CMake-profilen när du vill       ",
+        " mäta verklig prestanda. Kom ihåg: Debug-byggen är          ",
+        " DRAMATISKT långsammare (ibland 10-50x).                    ",
+        " In CLion: select 'release' in the CMake profile when you   ",
+        " want to measure real performance. Remember: Debug builds   ",
+        " are DRAMATICALLY slower (sometimes 10-50x).                ",
+        "------------------------------------------------------------"
+      ],
+      "name": "release",
+      "displayName": "Release — MI300X (gfx942)",
+      "description": "Optimerad build för benchmarking / Optimised build for benchmarking",
+      "inherits": "base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+
+    {
+      "$comment": [
+        "------------------------------------------------------------",
+        " DEBUG — Full felsökningsinsyn (Full debug visibility)       ",
+        "                                                            ",
+        " Använd för: stega genom kärnkod med ROCgdb, inspektera     ",
+        "   registervärden, verifiera minnesåtkomstmönster.          ",
+        " Use for: stepping through kernel code with ROCgdb,          ",
+        "   inspecting register values, verifying memory access.     ",
+        "                                                            ",
+        " VARNING (WARNING):                                         ",
+        "   -save-temps genererar .ll och .s filer i byggkatalogen.  ",
+        "   Dessa kan bli stora. Rensa regelbundet.                  ",
+        "   -save-temps generates .ll and .s files in the build dir. ",
+        "   These can grow large. Clean regularly.                   ",
+        "                                                            ",
+        " FÖR ATT FELSÖKA I CLION (TO DEBUG IN CLION):              ",
+        "   1. Välj 'debug' som CMake-profil                        ",
+        "   2. Sätt brytpunkter i .cpp-filer (även i __global__)    ",
+        "   3. Konfigurera GDB som 'rocgdb' (se nedan)              ",
+        "   1. Select 'debug' as CMake profile                      ",
+        "   2. Set breakpoints in .cpp files (even in __global__)   ",
+        "   3. Configure GDB as 'rocgdb' (see below)               ",
+        "------------------------------------------------------------"
+      ],
+      "name": "debug",
+      "displayName": "Debug — MI300X (gfx942)",
+      "description": "Felsökningsbuild med -save-temps / Debug build with -save-temps",
+      "inherits": "base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+
+    {
+      "$comment": [
+        "------------------------------------------------------------",
+        " DEV — Daglig utveckling (Daily development)                 ",
+        "                                                            ",
+        " RelWithDebInfo: kompilatorn optimerar (-O2) men bevarar    ",
+        " felsökningsinformation (-g). Det bästa av två världar.     ",
+        " RelWithDebInfo: compiler optimises (-O2) but preserves     ",
+        " debug information (-g). The best of both worlds.           ",
+        "                                                            ",
+        " REKOMMENDERAS SOM STANDARD I CLION.                        ",
+        " RECOMMENDED AS DEFAULT IN CLION.                           ",
+        "                                                            ",
+        " Du kan stega genom kod OCH se realistisk prestanda.        ",
+        " Kompilatorn kan dock optimera bort variabler, så ibland    ",
+        " ser du '<optimized out>' i debuggern. Byt till 'debug'    ",
+        " om det händer.                                             ",
+        " You can step through code AND see realistic performance.   ",
+        " The compiler may optimise away variables though, so you    ",
+        " sometimes see '<optimized out>' in the debugger. Switch    ",
+        " to 'debug' if that happens.                                ",
+        "------------------------------------------------------------"
+      ],
+      "name": "dev",
+      "displayName": "Dev — MI300X (gfx942) ★ recommended",
+      "description": "RelWithDebInfo — bäst för daglig utveckling / best for daily development",
+      "inherits": "base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+      }
+    },
+
+    {
+      "$comment": [
+        "------------------------------------------------------------",
+        " MI210 — Alternativ arkitektur (Alternative architecture)    ",
+        "                                                            ",
+        " Om du senare får en MI210 lokalt, använd denna preset.     ",
+        " If you later get a local MI210, use this preset.           ",
+        "                                                            ",
+        " gfx90a = CDNA2, stöder MFMA v2.                           ",
+        " Skillnader mot gfx942:                                     ",
+        "   - 2 GCD istället för 8 XCD (2 GCDs instead of 8 XCDs)  ",
+        "   - 64 GB HBM2e istället för 192 GB HBM3                  ",
+        "   - Samma MFMA-instruktioner, men CDNA2-varianter         ",
+        "     Same MFMA instructions, but CDNA2 variants            ",
+        "------------------------------------------------------------"
+      ],
+      "name": "mi210",
+      "displayName": "Dev — MI210 (gfx90a)",
+      "description": "CDNA2-build för lokal MI210 / CDNA2 build for local MI210",
+      "inherits": "base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+        "CMAKE_HIP_ARCHITECTURES": "gfx90a"
+      }
+    }
+  ],
+
+
+  "buildPresets": [
+    {
+      "$comment": [
+        "------------------------------------------------------------",
+        " Bygg-presets matchar konfigurations-presets.                ",
+        " Build presets match configure presets.                      ",
+        "                                                            ",
+        " I CLion: dessa syns som tillgängliga byggkonfigurationer.  ",
+        " In CLion: these appear as available build configurations.  ",
+        "------------------------------------------------------------"
+      ],
+      "name": "dev-build",
+      "displayName": "Build Dev",
+      "configurePreset": "dev"
+    },
+    {
+      "name": "release-build",
+      "displayName": "Build Release",
+      "configurePreset": "release"
+    },
+    {
+      "name": "debug-build",
+      "displayName": "Build Debug",
+      "configurePreset": "debug"
+    }
+  ]
+}

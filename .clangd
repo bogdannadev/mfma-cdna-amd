@@ -1,0 +1,141 @@
+# =============================================================================
+# .clangd — Konfiguration för clangd språkserver / Language server configuration
+# =============================================================================
+#
+# VAD ÄR DETTA? (WHAT IS THIS?)
+#   clangd är den språkserver (language server) som CLion använder för att
+#   förstå C++ och HIP-kod. Den tillhandahåller:
+#   clangd is the language server that CLion uses to understand C++ and
+#   HIP code. It provides:
+#
+#     - Kodkomplettering (code completion)  — Ctrl+Space i CLion
+#     - Hopp till definition (go to definition) — Ctrl+B
+#     - Felmarkering i realtid (real-time error highlighting)
+#     - Hitta alla användningar (find all usages) — Alt+F7
+#     - Automatisk inkludering (auto-include)
+#
+# VARFÖR BEHÖVS DENNA FIL? (WHY IS THIS FILE NEEDED?)
+#   CLion kör clangd med standardinställningar som INTE känner till HIP.
+#   CLion runs clangd with default settings that do NOT know about HIP.
+#
+#   Utan denna fil kan du se:
+#   Without this file you might see:
+#     - "unknown type name '__global__'" — falskt fel (false error)
+#     - "use of undeclared identifier 'hipMalloc'" — saknade headers
+#     - Ingen komplettering för MFMA-intrinsics — clangd vet inte
+#       att -x hip behövs
+#
+#   Med denna fil: clangd kompilerar filer med HIP-flaggor, förstår
+#   GPU-specifika konstruktioner, och ger korrekt komplettering.
+#   With this file: clangd compiles files with HIP flags, understands
+#   GPU-specific constructs, and provides correct completion.
+#
+# HUR DET FUNGERAR (HOW IT WORKS):
+#   1. CLion startar clangd för varje öppnad fil
+#      CLion starts clangd for each opened file
+#   2. clangd söker efter .clangd i projektmappen och uppåt
+#      clangd searches for .clangd in the project dir and upwards
+#   3. Inställningarna här läggs till de flaggor som compile_commands.json ger
+#      Settings here are added to the flags that compile_commands.json provides
+#
+# PRIORITETSORDNING (PRIORITY ORDER):
+#   compile_commands.json (från CMake) > .clangd > clangd standardvärden
+#   compile_commands.json (from CMake) > .clangd > clangd defaults
+#
+# =============================================================================
+
+# CompileFlags styr hur clangd kompilerar filer för analys.
+# CompileFlags controls how clangd compiles files for analysis.
+CompileFlags:
+
+  # Extra flaggor som läggs till varje kompileringskommando.
+  # Additional flags appended to every compile command.
+  #
+  # --cuda-gpu-arch=gfx942:
+  #   Talar om för clangd vilken GPU vi riktar oss mot. Utan detta
+  #   kan clangd inte avgöra vilka intrinsics som finns tillgängliga.
+  #   Tells clangd which GPU we target. Without this, clangd cannot
+  #   determine which intrinsics are available.
+  #
+  # -x hip:
+  #   Tvingar clangd att behandla ALLA filer som HIP-källkod,
+  #   oavsett filändelse. Detta gör att __global__, __shared__,
+  #   hipMalloc, etc. känns igen korrekt.
+  #   Forces clangd to treat ALL files as HIP source code,
+  #   regardless of file extension. This makes __global__, __shared__,
+  #   hipMalloc, etc. be recognised correctly.
+  #
+  # -D__HIP_PLATFORM_AMD__:
+  #   Definierar makrot som aktiverar AMD-specifika kodvägar i HIP-headers.
+  #   Utan detta kan clangd välja NVIDIA-vägar istället.
+  #   Defines the macro that activates AMD-specific code paths in HIP headers.
+  #   Without this, clangd may choose NVIDIA paths instead.
+  #
+  # --include=hip/hip_runtime.h:
+  #   Inkluderar implicit HIP-runtimens header. Vissa filer kanske inte
+  #   inkluderar den explicit, men clangd behöver den för att förstå
+  #   HIP-primitiver.
+  #   Implicitly includes the HIP runtime header. Some files might not
+  #   include it explicitly, but clangd needs it to understand HIP primitives.
+  Add:
+    - --cuda-gpu-arch=gfx942
+    - -D__HIP_PLATFORM_AMD__
+
+  # Flaggor att ta bort från compile_commands.json.
+  # Flags to remove from compile_commands.json.
+  #
+  # hipcc lägger till flaggor som clangd inte förstår. Dessa orsakar
+  # varningar eller fel i clangds analys men påverkar inte kodens korrekthet.
+  # hipcc adds flags that clangd doesn't understand. These cause warnings
+  # or errors in clangd's analysis but don't affect code correctness.
+  Remove:
+    - -nogpulib
+    - --offload-arch=*
+    - -munsafe-fp-atomics
+
+
+# Diagnostikinställningar — vilka varningar som visas/döljs.
+# Diagnostics settings — which warnings are shown/suppressed.
+Diagnostics:
+  # Undertryck varningar som är irrelevanta för HIP-kärnor.
+  # Suppress warnings that are irrelevant for HIP kernels.
+  #
+  # -Wno-unused-result:
+  #   HIP API-anrop returnerar hipError_t som vi ibland ignorerar
+  #   i lärokod (men INTE i produktionskod!).
+  #   HIP API calls return hipError_t which we sometimes ignore
+  #   in educational code (but NOT in production code!).
+  Suppress:
+    - -Wno-unused-result
+
+  # ClangTidy-kontroller som körs i bakgrunden.
+  # ClangTidy checks that run in the background.
+  #
+  # Dessa ger extra varningar utöver kompilatorns egna.
+  # These provide additional warnings beyond the compiler's own.
+  # Mycket användbart för att fånga vanliga misstag tidigt.
+  # Very useful for catching common mistakes early.
+  ClangTidy:
+    Add:
+      - modernize-use-*
+      - bugprone-*
+      - performance-*
+    Remove:
+      # Dessa strider mot HIP-idiom (these conflict with HIP idioms):
+      - modernize-use-trailing-return-type
+      - bugprone-easily-swappable-parameters
+
+
+# InlayHints — de svaga texterna som CLion visar inline.
+# InlayHints — the faint texts that CLion shows inline.
+#
+# T.ex: "hipMalloc(→ hipError_t)" visas bredvid anropet.
+# E.g.: "hipMalloc(→ hipError_t)" is shown next to the call.
+#
+# Användbart vid inlärning, kan stängas av när du blir mer erfaren.
+# Useful when learning, can be turned off as you become more experienced.
+InlayHints:
+  Enabled: Yes
+  ParameterNames: Yes
+  DeducedTypes: Yes
+  Designators: Yes

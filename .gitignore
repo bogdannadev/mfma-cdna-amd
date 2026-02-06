@@ -1,4 +1,8 @@
-# Binaries
+# =============================================================================
+# .gitignore — MFMA Course
+# =============================================================================
+
+# Binärer / Binaries
 hello_hip
 wavefront_basics
 lds_memory
@@ -6,7 +10,7 @@ mfma_intro
 mfma_gemm
 *_debug
 
-# Compiler intermediates
+# Kompilatorns mellanfiler / Compiler intermediates
 *.o
 *.s
 *.ll
@@ -15,11 +19,25 @@ mfma_gemm
 *.hipfb
 *.out
 
-# IDE
+# CMake byggkataloger / CMake build directories
+# Presets skapar build/<preset-namn>/ kataloger
+# Presets create build/<preset-name>/ directories
+build/
+cmake-build-*/
+
+# CMake User Presets — personliga inställningar, EJ delade
+# CMake User Presets — personal settings, NOT shared
+CMakeUserPresets.json
+
+# IDE-konfigurationer / IDE configurations
 .idea/
 .vscode/
 .cache/
+
+# CLion genererar denna via CMake — behövs inte i git
+# CLion generates this via CMake — not needed in git
 compile_commands.json
 
-# Others
+# Övrigt / Others
 *.txt
+!CMakeLists.txt
