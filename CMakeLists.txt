@@ -116,6 +116,8 @@ project(mfma_course
 #   gfx803  = RX 580 (GCN/Polaris) — OBS: inga matrisinstruktioner alls
 #                                     NOTE: no matrix instructions at all
 # ---------------------------------------------------------------------------
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_HIP_ARCHITECTURES gfx942 CACHE STRING
         "Target GPU architecture(s) — gfx942 for MI300X CDNA3")
 
