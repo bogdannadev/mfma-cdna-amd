@@ -106,8 +106,10 @@ int main() {
     printf("Problem size: %d elements (%zu bytes)\n", N, bytes);
 
     // Step 3: Allocate HOST memory (CPU-side)
-    auto* h_input = (float*)malloc(bytes);
-    auto* h_output = (float*)malloc(bytes);
+    float* h_input = nullptr;
+    float* h_output = nullptr;
+    HIP_CHECK(hipHostMalloc(&h_input, bytes)); // pinned host memory
+    HIP_CHECK(hipHostMalloc(&h_output, bytes));
 
     // Step 4: Initialise input data
     for (int i = 0; i < N; i++)
@@ -157,8 +159,8 @@ int main() {
     // Cleanup
     HIP_CHECK(hipFree(d_input));
     HIP_CHECK(hipFree(d_output));
-    free(h_input);
-    free(h_output);
+    HIP_CHECK(hipHostFree(h_input));
+    HIP_CHECK(hipHostFree(h_output));
 
     printf("\n Experiment 01 complete!\n\n");
     return 0;
