@@ -28,7 +28,7 @@
  */
 
 #include <hip/hip_runtime.h>
-#include <stdio.h>
+#include <cstdio>
 
 /**
  * Error checking macro - ESSENTIAL for debugging GPU code.
