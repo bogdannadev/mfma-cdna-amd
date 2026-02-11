@@ -444,7 +444,7 @@ Contributions are welcome. Areas where help is particularly valuable:
 
 ## Licence
 
-This project is licensed under the Apache 2.0 Licence. See `LICENSE` file for details.
+This project is licensed under the MIT Licence. See `LICENSE` file for details.
 
 ---
 
