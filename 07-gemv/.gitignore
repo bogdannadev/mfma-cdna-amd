@@ -1,0 +1,18 @@
+# Binary test vectors — large, regenerable
+# Binära testvektorer — stora, kan återskapas
+test_cases/**/*.bin
+
+# Julia artifacts
+# Julia-artefakter
+julia/Manifest.toml
+
+# Build artifacts
+# Byggartefakter
+hip/build/
+hip/*.o
+hip/gemv_kernel
+
+# Profiling outputs
+# Profileringsutdata
+results/*.csv
+results/*.json
